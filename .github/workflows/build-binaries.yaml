@@ -9,7 +9,7 @@ jobs:
     name: Build Binaries
     strategy:
       matrix:
-        platform: [linux-x64, linux-arm64, win-x64, osx-arm64, linux-musl-x64, linux-musl-arm64]
+        platform: [linux-x64, linux-arm64, win-x64, osx-arm64, linux-musl-x64, linux-musl-arm64, linux-musl-armv7l]
         include:
           - platform: linux-x64
             package: gcc-x86-64-linux-gnu
@@ -40,6 +40,11 @@ jobs:
             toolchain: Toolchain-Musl-Arm64.cmake
             lib-suffix: so
             os: ubuntu-latest
+          - platform: linux-musl-armv7l
+            package: 
+            toolchain: Toolchain-Musl-Armv7l.cmake
+            lib-suffix: so
+            os: ubuntu-latest
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -63,6 +68,13 @@ jobs:
         curl -LO https://musl.cc/aarch64-linux-musl-cross.tgz
         tar -xzf aarch64-linux-musl-cross.tgz
         sudo cp -r aarch64-linux-musl-cross /usr/local/
+
+    - name: Install cross-compilers and dependencies (linux-musl-armv7l)
+      if: matrix.platform == 'linux-musl-armv7l'
+      run: |
+        curl -LO https://musl.cc/armv7l-linux-musleabihf-cross.tgz
+        tar -xzf armv7l-linux-musleabihf-cross.tgz
+        sudo cp -r armv7l-linux-musleabihf-cross /usr/local/
 
     - name: Checkout nunicode repository from Bitbucket (specific tag)
       run: |
